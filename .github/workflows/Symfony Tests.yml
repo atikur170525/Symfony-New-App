@@ -4,27 +4,10 @@ on:
   push:
     branches:
       - '**'  # Run on push to any branch
-
 jobs:
   unit-tests:
     name: Run PHPUnit tests
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test
-          MYSQL_USER: symfony
-          MYSQL_PASSWORD: symfony
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -33,16 +16,12 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, intl, pdo_mysql
           coverage: none
 
       - name: Install Composer dependencies
         run: composer install --no-progress --no-suggest --prefer-dist
-
-      - name: Create .env.test.local
-        run: |
-          echo "DATABASE_URL=\"mysql://symfony:symfony@127.0.0.1:3306/test\"" > .env.test.local
 
       - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit --testdox
