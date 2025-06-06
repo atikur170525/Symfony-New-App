@@ -1,0 +1,42 @@
+name: Symfony Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    #services:
+      # Add services if needed, e.g., MySQL or Redis
+      # mysql:
+      #   image: mysql:5.7
+      #   env:
+      #     MYSQL_ROOT_PASSWORD: root
+      #   ports:
+      #     - 3306:3306
+      #   options: >-
+      #     --health-cmd="mysqladmin ping" 
+      #     --health-interval=10s
+      #     --health-timeout=5s
+      #     --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'   # Set your PHP version here
+          extensions: mbstring, intl, pdo_mysql, xdebug  # Add your needed extensions
+          coverage: xdebug
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+
+      - name: Run Symfony unit tests
+        run: php bin/phpunit --colors=always
